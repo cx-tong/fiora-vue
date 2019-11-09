@@ -7,6 +7,9 @@
       <chat :messageInfo="messageInfo"/>
     </div>
   <!-- <login-and-register /> -->
+  <audio ref="audio">
+    <source type="audio/mp3" src="../assets/audios/apple.mp3" />
+  </audio>
   </div>
 </template>
 
@@ -38,6 +41,11 @@ export default Vue.extend({
       this.messageInfo = res;
       console.log(res);
     });
+  },
+  sockets: {
+    message() {
+      (this.$refs.audio as any).play();
+    },
   },
 });
 </script>

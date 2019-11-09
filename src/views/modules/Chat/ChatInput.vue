@@ -4,14 +4,26 @@
       您还未登录，请<b class="guestLogin" role="button" @click="showLoginDialog = true">登录</b>后参与聊天
     </div>
     <div class="inputPanel" v-else>
-      <button class="iconButton">标签</button>
-      <button class="iconButton">随机</button>
-      <input class="input"
-      v-model="userMessage.content"
-      type="text"
-      placeholder="随便聊点啥吧, 不要无意义刷屏~~"
-      maxlength="2048" />
-      <input type="button" value="发送" @click="sendMessage"/>
+      <div class="iconButton">
+        <i class="iconfont icon-expression" style="font-size: 32px;
+        line-height: 44px;" @click="sendMessage"></i>
+      </div>
+      <div class="iconButton">
+        <i class="iconfont icon-feature" style="font-size: 32px;
+        line-height: 44px;" @click="sendMessage"></i>
+      </div>
+      <div class="from">
+        <input class="input"
+        v-model="content"
+        type="text"
+        placeholder="随便聊点啥吧, 不要无意义刷屏~~"
+        maxlength="2048" />
+        <i class="iconfont icon-about tooltip"></i>
+      </div>
+      <div class="iconButton">
+        <i class="iconfont icon-send" style="font-size: 32px;
+        line-height: 44px;" @click="sendMessage"></i>
+      </div>
     </div>
     <login-dialog v-if="showLoginDialog" @closeDialog="showLoginDialog = false"/>
   </div>
@@ -28,11 +40,7 @@ export default Vue.extend({
     return {
       isLogin: false,
       showLoginDialog: false,
-      userMessage: {
-        to: '',
-        type: '',
-        content: '',
-      },
+      content: '',
     };
   },
   methods: {
@@ -40,14 +48,7 @@ export default Vue.extend({
       this.showLoginDialog = false;
     },
     sendMessage() {
-      const toId = this.$store.state.userInfo.groups[0]._id;
-      this.userMessage = {
-        to: toId,
-        type: 'text',
-        content: this.userMessage.content,
-      };
-      this.$socket.emit('sendMessage', this.userMessage, (res:Object) => {
-        console.log(res);
+      this.$socket.emit('sendMessage', { to: this.$store.state.linkmanFocusId, type: 'text', content: this.content }, (res:Object) => {
         this.$emit('updateMessageList', res);
       });
     },
@@ -69,21 +70,42 @@ export default Vue.extend({
     }
     .inputPanel {
       display: flex;
+      flex: 1;
+      text-align: center;
+      align-items: center;
       .iconButton {
+        width: 44px;
+        height: 44px;
         text-align: center;
-        color: #a5b5c0;
+        color: #AAA;
         cursor: pointer;
       }
-      .input {
+      .iconButton:hover {
+        color: rgb(74, 144, 226, 0.8);
+      }
+      .from {
         flex: 1;
-        padding: 0px 8px;
-        height: 32px;
-        line-height: 32px;
-        outline: none;
-        border: 1px solid rgba(208, 208, 208, 0.5);
-        font-size: 14px;
-        color: #666;
-        user-select: auto;
+        display: flex;
+        position: relative;
+        margin: 0 10px;
+        .input {
+          flex: 1;
+          padding: 0px 8px;
+          height: 32px;
+          line-height: 32px;
+          outline: none;
+          border: 1px solid rgba(208, 208, 208, 0.5);
+          font-size: 14px;
+          color: #666;
+          user-select: auto;
+        }
+        .tooltip {
+          position: absolute;
+          right: 10px;
+          top: 5px;
+          font-size: 22px;
+          color: #aaa;
+        }
       }
     }
   }

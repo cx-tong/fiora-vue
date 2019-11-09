@@ -1,7 +1,7 @@
 <template>
   <div class="chat">
     <header-bar :groupInfo ="messageInfo.name" />
-    <message-list :messageList = "messageInfo.messages" />
+    <message-list :messageList = "$store.state.messagesList[$store.state.linkmanFocusId]" />
     <chat-input @updateMessageList = "updateMessageList" />
     <!-- <group-manage-panel /> -->
   </div>
@@ -22,13 +22,13 @@ export default Vue.extend({
     messageInfo: Object,
   },
   methods: {
-    updateMessageList(userMessage:Object) {
-      this.messageInfo.messages.push(userMessage);
+    updateMessageList(userMessage:Message) {
+      this.$store.commit('pushMessagesList', { id: this.$store.state.linkmanFocusId, message: userMessage });
     },
   },
   sockets: {
-    message(res:Object) {
-      this.messageInfo.messages.push(res);
+    message(res:Message) {
+      this.$store.state.messagesList[res.to].push(res);
     },
   },
 });

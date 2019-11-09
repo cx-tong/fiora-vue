@@ -1,39 +1,39 @@
 <template>
   <div class="linkmanList">
-    <div class="linkman"
-    :class="item._id === $store.state.linkmanFocusId?'focus':''"
-    role="button"
-    data-aero="false"
-    v-for="item in $store.state.userInfo.groups"
+    <linkman v-for="item in $store.state.userInfo.groups"
     :key="item._id"
-    @click="$store.commit('setFocusLinkman',item._id)">
-      <img
-        class
-        :src="item.avatar"
-        alt
-        style="width: 48px; height: 48px; border-radius: 24px;"
-      />
-      <div class="container">
-        <div class="rowContainer nameTimeBlock">
-          <p class="name">{{item.name}}</p>
-          <p class="time">{{item.createTime}}</p>
-        </div>
-        <div class="rowContainer previewUnreadBlock">
-          <p class="preview"></p>
-        </div>
-      </div>
-    </div>
+    :groupInfo="item"
+    :preview="$store.state.messagesList[item._id].length!==0?
+    $store.state.messagesList[item._id][$store.state.messagesList[item._id].length-1]
+    :{}"/>
   </div>
 </template>
 <script lang="ts">
 import Vue from 'vue';
+import Linkman from './Linkman.vue';
 
 export default Vue.extend({
+  components: {
+    Linkman,
+  },
   data() {
-    return {};
+    return {
+      preview: {},
+    };
   },
   mounted() {
     console.log(this.$store.state.userInfo.groups);
+  },
+  methods: {
+    covertTime(param:Date) {
+      const time = new Date(param);
+      return `${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}`;
+    },
+  },
+  sockets: {
+    message(res:Message) {
+      // this.preview[res._id] = res
+    },
   },
 });
 </script>
@@ -42,56 +42,4 @@ export default Vue.extend({
     flex: 1;
     overflow-y: auto;
   }
-  .linkman {
-      height: 70px;
-      display: flex;
-      align-items: center;
-      padding: 10px 16px;
-      cursor: default;
-      transition: background-color 0.2s;
-  }
-
-  .container {
-      flex: 1;
-      margin-left: 12px;
-  }
-
-  .rowContainer {
-      display: flex;
-      justify-content: space-between;
-  }
-
-  .nameTimeBlock {
-      margin-top: 4px;
-  }
-
-  .name {
-      color: var(--primary-text-color-10);
-      font-size: 14px;
-  }
-
-  .time {
-      color: var(--primary-text-color-7);
-      font-size: 12px;
-      position: relative;
-      top: 4px;
-  }
-
-  .previewUnreadBlock {
-      margin-top: 6px;
-  }
-
-  .preview {
-      color: var(--primary-text-color-7);
-      font-size: 12px;
-      width: 188px;
-      height: 20px;
-      line-height: 20px;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-  }
-  .focus {
-    background-color: rgba(74, 144, 226, 0.4);
-}
 </style>

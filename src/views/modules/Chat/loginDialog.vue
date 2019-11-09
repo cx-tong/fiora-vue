@@ -59,15 +59,25 @@ export default Vue.extend({
       this.$emit('closeDialog');
     },
     login():void {
-      this.$socket.emit('login', { username: this.loginData.username, password: this.loginData.password }, (res:object) => {
+      this.$socket.emit('login', { username: this.loginData.username, password: this.loginData.password }, (res:User) => {
         console.log(res);
         this.$store.commit('setUserInfo', res);
+        const messagesList:String[] = [];
+        res.groups.forEach((item:Group) => {
+          messagesList.push(item._id);
+        });
+        this.$socket.emit('getLinkmansLastMessages', { linkmans: messagesList }, (resData:Object) => {
+          console.log(resData);
+          this.$store.commit('initMessagesList', resData);
+        });
         this.closeDialog();
       });
     },
     register():void {
       this.$socket.emit('register', { username: this.registerData.username, password: this.registerData.password }, (res:object) => {
         console.log(res);
+        this.$store.commit('setUserInfo', res);
+        this.closeDialog();
       });
     },
   },

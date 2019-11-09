@@ -1,11 +1,9 @@
-// @import '../../../node_modules/normalize.css/normalize.css';
 
 @font-face {
     font-family: 'local-file';
     src: url('../fonts/font.woff');
 }
 
-* {
     * {
         user-select: none;
     }
@@ -71,4 +69,3 @@
     .hide {
         display: none !important;
     }
-}

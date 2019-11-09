@@ -1,9 +1,9 @@
 <template>
   <div class="sidebar">
     <div class="buttons">
-      <!-- <img :src="" -->
-      <button>上</button>
-      <button>下</button>
+      <img class="avatar" :src="$store.state.userInfo.avatar" />
+      <button>设置</button>
+      <button>注销</button>
     </div>
   </div>
 </template>
@@ -28,6 +28,13 @@ export default Vue.extend({
     align-items: center;
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
+    .avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 30px;
+      margin-top: 50px;
+      cursor: pointer;
+    }
     .buttons {
       position: absolute;
       bottom: 40px;
