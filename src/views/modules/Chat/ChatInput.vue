@@ -48,8 +48,14 @@ export default Vue.extend({
       this.showLoginDialog = false;
     },
     sendMessage() {
-      this.$socket.emit('sendMessage', { to: this.$store.state.linkmanFocusId, type: 'text', content: this.content }, (res:Object) => {
-        this.$emit('updateMessageList', res);
+      let id = this.$utils.getFriendId(this.$store.state.userInfo._id,
+        this.$store.state.linkmanFocusId);
+      if (this.$store.state.messagesList[this.$store.state.linkmanFocusId]) {
+        id = this.$store.state.linkmanFocusId;
+      }
+      this.$socket.emit('sendMessage', { to: id, type: 'text', content: this.content }, (message:Message) => {
+        console.log(message);
+        this.$emit('updateMessageList', message);
       });
     },
   },

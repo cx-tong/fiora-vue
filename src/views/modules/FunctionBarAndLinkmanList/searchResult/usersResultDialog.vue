@@ -33,8 +33,14 @@ export default Vue.extend({
       this.showState = true;
     },
     addFriend() {
-      this.$socket.emit('addFriend', { userId: this.userInfo._id }, (res:User) => {
-        console.log(res);
+      this.$socket.emit('addFriend', { userId: this.userInfo._id }, (friendInfo:User) => {
+        const friendId:string = this.$utils
+          .getFriendId(friendInfo._id, this.$store.state.userInfo._id);
+        this.$socket.emit('getLinkmansLastMessages', { linkmans: [friendId] }, (messages:Message[]) => {
+          this.$store.commit('addFriendInfo', { id: friendId, friend: friendInfo });
+          this.$store.commit('addMessagesList', { id: friendId, message: messages });
+        });
+        this.showState = false;
       });
     },
   },

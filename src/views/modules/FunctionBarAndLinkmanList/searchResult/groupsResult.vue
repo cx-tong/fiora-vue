@@ -36,7 +36,7 @@ export default Vue.extend({
     joinGroup() {
       this.$socket.emit('joinGroup', { groupId: this.groupInfo._id }, (groupInfo:Group) => {
         console.log(groupInfo);
-        this.$socket.emit('getLinkmanHistoryMessages', { linkmanId: groupInfo._id, existCount: 0 }, (messages:Message[]) => {
+        this.$socket.emit('getLinkmansLastMessages', { linkmans: [groupInfo._id] }, (messages:Message[]) => {
           console.log(messages);
           this.$store.commit('addGroupInfo', groupInfo);
           this.$store.commit('addMessagesList', { id: groupInfo._id, message: messages });

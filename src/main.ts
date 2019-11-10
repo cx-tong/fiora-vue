@@ -3,6 +3,7 @@ import App from './App.vue';
 import router from './router';
 import store from './store';
 import './types/type';
+import './utils/utils';
 import './assets/styles/iconfont.css';
 import './assets/styles/normalize.css';
 
@@ -10,7 +11,7 @@ const VueSocketIO = require('vue-socket.io');
 
 declare module 'vue/types/options' {
   interface ComponentOptions<V extends Vue> {
-    sockets?: {}
+    sockets?: {},
   }
 }
 declare module 'vue/types/vue' {

@@ -1,11 +1,8 @@
 <template>
   <div class="linkmanList">
-    <linkman v-for="item in $store.state.userInfo.groups"
+    <linkman v-for="item in $store.state.userInfo.groups.concat($store.state.userInfo.friends)"
     :key="item._id"
-    :groupInfo="item"
-    :preview="$store.state.messagesList[item._id].length!==0?
-    $store.state.messagesList[item._id][$store.state.messagesList[item._id].length-1]
-    :{}"/>
+    :linkmanInfo="item.name?item:setId(item)"/>
   </div>
 </template>
 <script lang="ts">
@@ -16,23 +13,17 @@ export default Vue.extend({
   components: {
     Linkman,
   },
-  data() {
-    return {
-      preview: {},
-    };
-  },
-  mounted() {
-    console.log(this.$store.state.userInfo.groups);
-  },
   methods: {
     covertTime(param:Date) {
       const time = new Date(param);
       return `${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}`;
     },
-  },
-  sockets: {
-    message(res:Message) {
-      // this.preview[res._id] = res
+    setId(item:any) {
+      const linkman = item;
+      console.log(item);
+      linkman._id = this.$utils.getFriendId(item.to._id ? item.to._id : item.to,
+        this.$store.state.userInfo._id);
+      return linkman;
     },
   },
 });

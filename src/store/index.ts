@@ -27,11 +27,12 @@ export default new Vuex.Store({
     },
     addGroupInfo(state, groupInfo:Group) {
       (state.userInfo as User).groups.push(groupInfo);
-      (state.messagesList as MessagesList)[groupInfo._id] = [];
+      Vue.set(state.messagesList, groupInfo._id, []);
     },
-    // addFirendInfo(state, firendInfo:User) {
-
-    // },
+    addFriendInfo(state, friendInfo:{id:string, friend: User}) {
+      (state.userInfo as User).friends.push(friendInfo.friend);
+      Vue.set(state.messagesList, friendInfo.id, []);
+    },
     // 获取最后的群组信息，初始化消息列表
     initMessagesList(state, messagesList:MessagesList) {
       state.messagesList = messagesList;

@@ -1,16 +1,17 @@
 <template>
   <div class="linkman"
-  :class="groupInfo._id === $store.state.linkmanFocusId?'focus':''"
-  @click="switchGroup">
+  :class="linkmanInfo._id === $store.state.linkmanFocusId?'focus':''"
+  @click="switchLinkman">
     <img
       class
-      :src="groupInfo.avatar"
+      :src="linkmanInfo.avatar ? linkmanInfo.avatar : linkmanInfo.to.avatar"
       alt
       style="width: 48px; height: 48px; border-radius: 24px;"
     />
     <div class="container">
       <div class="rowContainer nameTimeBlock">
-        <p class="nameit">{{groupInfo.name}}</p>
+        <p class="nameit">{{linkmanInfo.name ? linkmanInfo.name : linkmanInfo.to.username
+          ? linkmanInfo.to.username : linkmanInfo.username}}</p>
         <p class="time" v-if="preview._id!==undefined">
           {{covertTime(preview.createTime)}}</p>
       </div>
@@ -33,31 +34,37 @@ import Vue from 'vue';
 
 export default Vue.extend({
   props: {
-    groupInfo: Object,
-    preview: Object,
+    linkmanInfo: Object,
   },
   data() {
     return {
       unread: 0,
     };
   },
+  computed: {
+    preview: {
+      get() {
+        return this.$store.state.messagesList[this.linkmanInfo._id].length !== 0
+          ? this.$store.state.messagesList[this.linkmanInfo._id][(this.$store.state.messagesList[this.linkmanInfo._id].length) - 1] : '';
+      },
+    },
+  },
   mounted() {
-    console.log(this.preview);
-    console.log(this.preview._id === undefined);
+    console.log('preview: ', this.preview);
   },
   methods: {
     covertTime(param:Date) {
       const time = new Date(param);
       return `${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}`;
     },
-    switchGroup() {
-      this.$store.commit('setFocusLinkman', this.groupInfo._id);
+    switchLinkman() {
+      this.$store.commit('setFocusLinkman', this.linkmanInfo._id);
       this.unread = 0;
     },
   },
   sockets: {
     message(res:Message) {
-      if (res.to === this.groupInfo._id && this.$store.state.linkmanFocusId !== res.to) {
+      if (res.to === this.linkmanInfo._id && this.$store.state.linkmanFocusId !== res.to) {
         this.unread = this.unread + 1;
       }
     },
