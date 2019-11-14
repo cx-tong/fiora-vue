@@ -1,6 +1,6 @@
 <template>
   <div class="functionBarAndLinkmanList">
-    <function-bar />
+    <function-bar v-if="$store.getters.isLogin"/>
     <linkman-list></linkman-list>
   </div>
 </template>

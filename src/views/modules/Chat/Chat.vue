@@ -1,9 +1,9 @@
 <template>
   <div class="chat">
-    <header-bar :groupInfo ="messageInfo.name" />
-    <message-list :messageList = "$store.state.messagesList[$store.state.linkmanFocusId]" />
-    <chat-input @updateMessageList = "updateMessageList" />
-    <!-- <group-manage-panel /> -->
+    <header-bar :linkman ="focusLinkman" @showSidePanel="showSidePanel"/>
+    <message-list :messagesList="focusLinkman?focusLinkman.messages:{}"/>
+    <chat-input />
+    <group-manage-panel ref="groupManagePanel" :linkman ="focusLinkman"/>
   </div>
 </template>
 <script lang="ts">
@@ -11,24 +11,25 @@ import Vue from 'vue';
 import HeaderBar from './HeaderBar.vue';
 import MessageList from './MessageList.vue';
 import ChatInput from './ChatInput.vue';
+import GroupManagePanel from './GroupManagePanel.vue';
 
 export default Vue.extend({
   components: {
     HeaderBar,
     MessageList,
     ChatInput,
+    GroupManagePanel,
   },
-  props: {
-    messageInfo: Object,
-  },
-  methods: {
-    updateMessageList(userMessage:Message) {
-      this.$store.commit('pushMessagesList', { id: this.$store.state.linkmanFocusId, message: userMessage });
+  computed: {
+    focusLinkman: {
+      get():Linkman {
+        return this.$store.state.linkmans[this.$store.state.focus];
+      },
     },
   },
-  sockets: {
-    message(res:Message) {
-      this.$store.state.messagesList[res.to].push(res);
+  methods: {
+    showSidePanel() {
+      (this.$refs.groupManagePanel as any).show();
     },
   },
 });

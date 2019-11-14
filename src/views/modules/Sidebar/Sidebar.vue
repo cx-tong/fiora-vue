@@ -1,20 +1,31 @@
 <template>
   <div class="sidebar">
+    <img class="avatar" :src="$store.state.user.avatar" v-if="$store.getters.isLogin"/>
     <div class="buttons">
-      <img class="avatar" :src="$store.state.userInfo.avatar" />
-      <button>设置</button>
-      <button>注销</button>
+      <div class="iconButton" @click="$refs.settingDialog.show()" v-if="$store.getters.isLogin">
+        <i class="iconfont icon-setting" style="font-size: 26px;line-height: 40px;"></i>
+      </div>
+      <div class="iconButton" @click="logout" v-if="$store.getters.isLogin">
+        <i class="iconfont icon-logout" style="font-size: 26px;line-height: 40px;"></i>
+      </div>
     </div>
+    <setting-dialog ref="settingDialog"></setting-dialog>
   </div>
 </template>
 <script lang="ts">
 import Vue from 'vue';
+import SettingDialog from './settingDialog.vue';
 
 export default Vue.extend({
-  data() {
-    return {
-      test: 'test',
-    };
+  components: {
+    SettingDialog,
+  },
+  methods: {
+    logout() {
+      this.$socket.close();
+      this.$store.commit('logout');
+      this.$socket.open();
+    },
   },
 });
 </script>
@@ -41,6 +52,13 @@ export default Vue.extend({
       display: flex;
       flex-direction: column;
       align-items: center;
+      .iconButton {
+        width: 40px;
+        height: 40px;
+        text-align: center;
+       color: rgba(247, 247, 247, 0.7);
+        cursor: pointer;
+      }
     }
   }
 </style>

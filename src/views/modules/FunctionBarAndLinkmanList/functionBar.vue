@@ -64,7 +64,7 @@ export default Vue.extend({
       document.body.addEventListener('click', closeSearchDialog);
     },
     showCreateGroupDialog() {
-      (this.$refs.createGroupDialog as any).showDialog();
+      (this.$refs.createGroupDialog as any).show();
     },
     search() {
       (this.$refs.searchPanel as any).search();

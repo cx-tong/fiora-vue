@@ -4,6 +4,7 @@ import router from './router';
 import store from './store';
 import './types/type';
 import './utils/utils';
+import './utils/socket';
 import './assets/styles/iconfont.css';
 import './assets/styles/normalize.css';
 
@@ -17,13 +18,11 @@ declare module 'vue/types/options' {
 declare module 'vue/types/vue' {
   interface Vue {
     $socket: any,
+    tipAudio ?: any,
+    $fetch: any,
   }
 }
-Vue.use(new VueSocketIO({
-  debug: true,
-  // connection: 'https://fiora.suisuijiang.com/',
-  connection: 'http://localhost:9200/',
-}));
+
 Vue.config.productionTip = false;
 
 new Vue({

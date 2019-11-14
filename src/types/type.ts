@@ -1,25 +1,120 @@
-interface User {
-  _id: string, // {string} id
-  username: string, // {string} 用户名
-  avatar: string, // {string} 头像
-  groups: Group[], // {[Group]} 群组列表
-  friends: User[], // {[User]} 好友列表
-  token: string, // {string} 免密登录token
-  isAdmin: boolean, // {boolean} 是否为管理员
-}
-interface Group {
-  _id: string, // {string} id
-  name: string, // {string} 群组名
-  avatar: string, // {string} 头像
-  creator: User['_id'], // {User ID} 群主id
-  isDefault: boolean, // {boolean} 是否为默认群
-  members: User[], // {[User]} 成员列表
-  messages: Message[], // {[Message]} 消息列表
-}
+/** 聊天消息 */
 interface Message {
-  _id: string, // {string} id
-  from: User, // {User} 发送者
-  to: string, // {string} 群聊: 群id, 私聊: 两人id拼接, 按字符串比较, 小的在前
-  type: string, // {string} 消息类型 ['text', 'image', 'code', 'invite']
-  content: string, // {string} 消息内容
+  _id: string;
+  type: string;
+  content: string;
+  from: {
+      _id: string;
+      username: string;
+      avatar: string;
+      originUsername: string;
+      tag: string;
+  };
+  loading: boolean;
+  percent: number;
+  createTime: string;
+}
+
+interface MessagesMap {
+  [messageId: string]: Message;
+}
+
+interface GroupMember {
+  user: {
+      _id: string;
+      username: string;
+      avatar: string;
+  };
+  os: string;
+  browser: string;
+  environment: string;
+}
+
+/** 群组 */
+interface Group {
+  _id: string;
+  name: string;
+  avatar: string;
+  createTime: string;
+  creator: string;
+  onlineMembers: GroupMember[];
+}
+
+/** 好友 */
+interface Friend {
+  _id: string;
+  name: string;
+  avatar: string;
+  createTime: string;
+}
+
+/** 联系人 */
+interface Linkman extends Group, User {
+  type: string;
+  unread: number;
+  messages: MessagesMap;
+}
+
+interface LinkmansMap {
+  [linkmanId: string]: Linkman;
+}
+
+/** 用户信息 */
+interface User {
+  _id: string;
+  username: string;
+  avatar: string;
+}
+
+/** redux store state */
+interface State {
+  /** 用户信息 */
+  user?: {
+      _id: string;
+      username: string;
+      avatar: string;
+      tag: string;
+      isAdmin: boolean;
+  };
+  linkmans: LinkmansMap;
+  /** 聚焦的联系人 */
+  focus: string;
+  /** 客户端连接状态 */
+  connect: boolean;
+  /** 客户端的一些状态值 */
+  status: {
+      /** 是否显示登陆注册框 */
+      loginRegisterDialogVisible: boolean;
+      /** 主题 */
+      theme: string;
+      /** 主题主色调 */
+      primaryColor: string;
+      /** 主题文字主色调 */
+      primaryTextColor: string;
+      /** 背景图 */
+      backgroundImage: string;
+      /** 启用毛玻璃效果 */
+      aero: boolean;
+      /** 新消息声音提示开关 */
+      soundSwitch: boolean;
+      /** 声音类型 */
+      sound: string;
+      /** 新消息桌面提醒开关 */
+      notificationSwitch: boolean;
+      /** 新消息语言朗读开关 */
+      voiceSwitch: boolean;
+      /** 是否朗读个人发送的消息开关 */
+      selfVoiceSwitch: boolean;
+      /**
+       * 用户标签颜色模式
+       * singleColor: 固定颜色
+       * fixedColor: 同一词始终同一颜色
+       * randomColor: 同一词在每次渲染中保持同一颜色
+       */
+      tagColorMode: string;
+      /** 是否展示侧边栏 */
+      sidebarVisible: boolean;
+      /** 是否展示搜索+联系人列表栏 */
+      functionBarAndLinkmanListVisible: boolean;
+  };
 }

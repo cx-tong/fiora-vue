@@ -1,6 +1,6 @@
 <template>
   <div class="chatInput">
-    <div style="width: 100%" v-if="!$store.state.isLogin">
+    <div style="width: 100%" v-if="!$store.getters.isLogin">
       您还未登录，请<b class="guestLogin" role="button" @click="showLoginDialog = true">登录</b>后参与聊天
     </div>
     <div class="inputPanel" v-else>
@@ -48,15 +48,13 @@ export default Vue.extend({
       this.showLoginDialog = false;
     },
     sendMessage() {
-      let id = this.$utils.getFriendId(this.$store.state.userInfo._id,
-        this.$store.state.linkmanFocusId);
-      if (this.$store.state.messagesList[this.$store.state.linkmanFocusId]) {
-        id = this.$store.state.linkmanFocusId;
-      }
-      this.$socket.emit('sendMessage', { to: id, type: 'text', content: this.content }, (message:Message) => {
-        console.log(message);
-        this.$emit('updateMessageList', message);
-      });
+      this.$fetch('sendMessage', { to: this.$store.state.focus, type: 'text', content: this.content })
+        .then(([error, message]:[string, Message]) => {
+          if (!error) {
+            this.$store.commit('pushMessagesList', message);
+            this.content = '';
+          }
+        });
     },
   },
 });

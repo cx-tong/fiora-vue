@@ -10,7 +10,11 @@
         style="width:60px;height:60px;border-radius:30px;"/>
         <p>{{userInfo.username}}</p>
       </div>
-      <div class="info">
+      <div class="info" v-if="isFriend">
+        <input style="background-color:#dd514c;"
+        class="button" type="button" value="删除好友" @click="deleteFriend" />
+      </div>
+      <div class="info" v-else>
         <input class="button" type="button" value="加为好友" @click="addFriend" />
       </div>
     </div>
@@ -28,20 +32,42 @@ export default Vue.extend({
       showState: false,
     };
   },
+  computed: {
+    isFriend: {
+      get():boolean {
+        return this.$store.state.linkmans[this.userInfo._id];
+      },
+    },
+  },
   methods: {
-    showDialog() {
+    show() {
       this.showState = true;
     },
     addFriend() {
-      this.$socket.emit('addFriend', { userId: this.userInfo._id }, (friendInfo:User) => {
-        const friendId:string = this.$utils
-          .getFriendId(friendInfo._id, this.$store.state.userInfo._id);
-        this.$socket.emit('getLinkmansLastMessages', { linkmans: [friendId] }, (messages:Message[]) => {
-          this.$store.commit('addFriendInfo', { id: friendId, friend: friendInfo });
-          this.$store.commit('addMessagesList', { id: friendId, message: messages });
+      this.$fetch('addFriend', { userId: this.userInfo._id })
+        .then(([error, friendInfo]: [string, User]) => {
+          if (!error) {
+            const friendId:string = this.$utils
+              .getFriendId(friendInfo._id, this.$store.state.user._id);
+            this.$fetch('getLinkmansLastMessages', { linkmans: [friendId] })
+              .then(([e, messages]:[string, Message[]]) => {
+                if (!e) {
+                  this.$store.commit('addFriend', { friend: friendInfo, message: messages });
+                }
+              });
+            this.showState = false;
+          }
         });
-        this.showState = false;
-      });
+    },
+    deleteFriend() {
+      this.$fetch('deleteFriend', { userId: this.userInfo._id.replace(this.$store.state.user._id, '') })
+        .then(([error, friendInfo]: [string, User]) => {
+          if (!error) {
+            console.log(this.userInfo);
+            this.$store.commit('deleteLinkman', this.userInfo._id);
+            this.showState = false;
+          }
+        });
     },
   },
 });

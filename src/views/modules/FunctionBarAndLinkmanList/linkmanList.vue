@@ -1,17 +1,21 @@
 <template>
   <div class="linkmanList">
-    <linkman v-for="item in $store.state.userInfo.groups.concat($store.state.userInfo.friends)"
-    :key="item._id"
-    :linkmanInfo="item.name?item:setId(item)"/>
+    <linkman v-for="(value, key) in $store.state.linkmans"
+    :key="key"
+    :linkman="value"/>
   </div>
 </template>
 <script lang="ts">
 import Vue from 'vue';
+import { mapGetters } from 'vuex';
 import Linkman from './Linkman.vue';
 
 export default Vue.extend({
   components: {
     Linkman,
+  },
+  mounted() {
+    console.log(this.$store.state.linkmans);
   },
   methods: {
     covertTime(param:Date) {

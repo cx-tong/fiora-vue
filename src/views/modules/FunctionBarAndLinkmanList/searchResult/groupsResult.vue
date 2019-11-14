@@ -30,19 +30,25 @@ export default Vue.extend({
     };
   },
   methods: {
-    showDialog() {
+    show() {
       this.showState = true;
     },
     joinGroup() {
-      this.$socket.emit('joinGroup', { groupId: this.groupInfo._id }, (groupInfo:Group) => {
-        console.log(groupInfo);
-        this.$socket.emit('getLinkmansLastMessages', { linkmans: [groupInfo._id] }, (messages:Message[]) => {
-          console.log(messages);
-          this.$store.commit('addGroupInfo', groupInfo);
-          this.$store.commit('addMessagesList', { id: groupInfo._id, message: messages });
+      this.$fetch('joinGroup', { groupId: this.groupInfo._id })
+        .then(([error, groupInfo]: [string, Group]) => {
+          if (!error) {
+            this.$fetch('getLinkmansLastMessages', { linkmans: [groupInfo._id] })
+              .then(([e, messages]: [string, Message]) => {
+                if (!e) {
+                  this.$store.commit('addGroup', { group: groupInfo, messageMap: messages });
+                  // this.$store.commit('addGroupInfo', groupInfo);
+                  // this.$store.commit('addMessagesList',
+                  // { id: groupInfo._id, message: messages });
+                  this.showState = false;
+                }
+              });
+          }
         });
-        this.showState = false;
-      });
     },
   },
 });

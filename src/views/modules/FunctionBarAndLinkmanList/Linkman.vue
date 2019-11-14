@@ -1,17 +1,16 @@
 <template>
   <div class="linkman"
-  :class="linkmanInfo._id === $store.state.linkmanFocusId?'focus':''"
+  :class="linkman._id === $store.state.focus?'focus':''"
   @click="switchLinkman">
     <img
       class
-      :src="linkmanInfo.avatar ? linkmanInfo.avatar : linkmanInfo.to.avatar"
+      :src="linkman.avatar"
       alt
       style="width: 48px; height: 48px; border-radius: 24px;"
     />
     <div class="container">
       <div class="rowContainer nameTimeBlock">
-        <p class="nameit">{{linkmanInfo.name ? linkmanInfo.name : linkmanInfo.to.username
-          ? linkmanInfo.to.username : linkmanInfo.username}}</p>
+        <p class="nameit">{{linkman.name}}</p>
         <p class="time" v-if="preview._id!==undefined">
           {{covertTime(preview.createTime)}}</p>
       </div>
@@ -24,7 +23,7 @@
           {{preview.type==='text'?
           preview.content
           :preview.type}}</p>
-        <p class="unread" v-if="unread!==0">{{unread}}</p>
+        <p class="unread" v-if="linkman.unread!==0">{{linkman.unread}}</p>
       </div>
     </div>
   </div>
@@ -34,7 +33,7 @@ import Vue from 'vue';
 
 export default Vue.extend({
   props: {
-    linkmanInfo: Object,
+    linkman: Object,
   },
   data() {
     return {
@@ -43,14 +42,13 @@ export default Vue.extend({
   },
   computed: {
     preview: {
-      get() {
-        return this.$store.state.messagesList[this.linkmanInfo._id].length !== 0
-          ? this.$store.state.messagesList[this.linkmanInfo._id][(this.$store.state.messagesList[this.linkmanInfo._id].length) - 1] : '';
+      get():Message {
+        let lastMessage:Message;
+        const { length } = Object.keys(this.linkman.messages);
+        return length !== 0
+          ? this.linkman.messages[Object.keys(this.linkman.messages)[length - 1]] : {};
       },
     },
-  },
-  mounted() {
-    console.log('preview: ', this.preview);
   },
   methods: {
     covertTime(param:Date) {
@@ -58,15 +56,14 @@ export default Vue.extend({
       return `${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}`;
     },
     switchLinkman() {
-      this.$store.commit('setFocusLinkman', this.linkmanInfo._id);
-      this.unread = 0;
+      this.$store.commit('setFocusLinkman', this.linkman._id);
     },
   },
   sockets: {
     message(res:Message) {
-      if (res.to === this.linkmanInfo._id && this.$store.state.linkmanFocusId !== res.to) {
-        this.unread = this.unread + 1;
-      }
+      // if (res.to === this.linkman._id && this.$store.state.linkmanFocusId !== res.to) {
+      //   this.unread = this.unread + 1;
+      // }
     },
   },
 });

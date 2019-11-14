@@ -28,19 +28,17 @@ export default Vue.extend({
     };
   },
   methods: {
-    showDialog() {
+    show() {
       this.showState = true;
     },
     createGroup() {
-      this.$socket.emit(
-        'createGroup',
-        { name: this.groupName },
-        (groupInfo:Group) => {
-          this.$store.commit('addGroupInfo', groupInfo);
-          this.$store.commit('addMessagesList', { id: groupInfo._id, message: [] });
-          this.showState = false;
-        },
-      );
+      this.$fetch('createGroup', { name: this.groupName })
+        .then(([error, groupInfo]:[string, Group]) => {
+          if (!error) {
+            this.$store.commit('createGroup', groupInfo);
+            this.showState = false;
+          }
+        });
     },
   },
 });

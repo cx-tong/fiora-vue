@@ -59,26 +59,45 @@ export default Vue.extend({
       this.$emit('closeDialog');
     },
     login():void {
-      this.$socket.emit('login', { username: this.loginData.username, password: this.loginData.password }, (userInfo:any) => {
-        const linkmanIds = [
-          ...userInfo.groups.map((group:Group) => group._id),
-          ...userInfo.friends.map((friend:any) => this.$utils
-            .getFriendId(friend.from, friend.to._id)),
-        ];
-        console.log(linkmanIds);
-        this.$socket.emit('getLinkmansLastMessages', { linkmans: linkmanIds }, (resData:Object) => {
-          this.$store.commit('initMessagesList', resData);
-          this.$store.commit('setUserInfo', userInfo);
+      this.$fetch('login', { username: this.loginData.username, password: this.loginData.password })
+        .then(([error, userInfo]: [string, any]) => {
+          if (!error) {
+            const { groups, friends } = userInfo;
+            const linkmanIds = [
+              ...groups.map((group:Group) => group._id),
+              ...friends.map((friend:Friend) => this.$utils
+                .getFriendId((friend as any).to._id, userInfo._id)),
+            ];
+            this.$fetch('getLinkmansLastMessages', { linkmans: linkmanIds })
+              .then(([e, resData]: [string, MessagesMap]) => {
+                if (!e) {
+                  this.$store.commit('setLinkmans', { groups: userInfo.groups, friends: userInfo.friends, messagesMap: resData });
+                  this.$store.commit('login', userInfo);
+                }
+              });
+            this.closeDialog();
+          }
         });
-        this.closeDialog();
-      });
     },
     register():void {
-      this.$socket.emit('register', { username: this.registerData.username, password: this.registerData.password }, (res:object) => {
-        console.log(res);
-        this.$store.commit('setUserInfo', res);
-        this.closeDialog();
-      });
+      this.$fetch('register', { username: this.registerData.username, password: this.registerData.password })
+        .then(([error, userInfo]: [string, any]) => {
+          if (!error) {
+            const linkmanIds = [
+              ...userInfo.groups.map((group:Group) => group._id),
+              ...userInfo.friends.map((friend:any) => this.$utils
+                .getFriendId(friend.from, friend.to._id)),
+            ];
+            this.$fetch('getLinkmansLastMessages', { linkmans: linkmanIds })
+              .then(([e, resData]: [string, any]) => {
+                if (!e) {
+                  this.$store.commit('initMessagesList', resData);
+                  this.$store.commit('setUserInfo', userInfo);
+                }
+              });
+            this.closeDialog();
+          }
+        });
     },
   },
 });
@@ -101,13 +120,13 @@ export default Vue.extend({
       padding: 20px;
       background-color: white;
       border-radius: 10px;
+      overflow-y: auto;
       .tabPanel {
         display: flex;
         justify-content: center;
         border-bottom: 1px solid #ccc;
         text-align: center;
         .tabPanel-button {
-          width: 40px;
           height: 40px;
           padding: 0 20px;
           margin: 0 15px;

@@ -22,7 +22,7 @@
             <div class="resultItem"
             v-for="item in searchResult.users"
             :key="item._id"
-            @click="userInfo=item;$refs.userResult.showDialog()">
+            @click="userInfo=item;$refs.userResult.show()">
               <img class="avatar" :src="item.avatar"/>
               <p class="name">{{item.username}}</p>
             </div>
@@ -32,7 +32,7 @@
             <div class="resultItem"
             v-for="item in searchResult.groups"
             :key="item._id"
-            @click="groupInfo=item;$refs.groupResult.showDialog()">
+            @click="groupInfo=item;$refs.groupResult.show()">
               <img class="avatar" :src="item.avatar"/>
               <p class="name">{{item.members}}人</p>
               <p class="name">{{item.name}}</p>
@@ -94,10 +94,12 @@ export default Vue.extend({
       this.searchResult = { users: [], groups: [] };
     },
     search() {
-      this.$socket.emit('search', { keywords: this.searchKey }, (res:{ users:[], groups:[] }) => {
-        this.searchResult = res;
-        console.log(this.searchResult);
-      });
+      this.$fetch('search', { keywords: this.searchKey })
+        .then(([error, res]: [string, any]) => {
+          if (!error) {
+            this.searchResult = res;
+          }
+        });
     },
   },
 });
