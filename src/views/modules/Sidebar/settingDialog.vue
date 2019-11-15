@@ -37,6 +37,7 @@ export default Vue.extend({
         { text: '陌陌', src: 'momo.mp3' },
         { text: '滑稽', src: 'huaji.mp3' },
       ],
+      audio: new Audio(),
     };
   },
   methods: {
@@ -46,8 +47,8 @@ export default Vue.extend({
     setAudio(src:string) {
       console.log(this);
       this.$store.commit('setTipAudio', src);
-      (this.tipAudio as any).src = `./audios/${src}`;
-      (this.tipAudio as any).play();
+      this.audio.src = `./audios/${src}`;
+      this.audio.play();
     },
   },
 });

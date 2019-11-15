@@ -7,6 +7,10 @@ import './utils/utils';
 import './utils/socket';
 import './assets/styles/iconfont.css';
 import './assets/styles/normalize.css';
+import Message from './components/Message';
+
+// Vue.use(Message);
+Vue.prototype.$message = Message;
 
 const VueSocketIO = require('vue-socket.io');
 
@@ -20,6 +24,7 @@ declare module 'vue/types/vue' {
     $socket: any,
     tipAudio ?: any,
     $fetch: any,
+    $message: Function,
   }
 }
 

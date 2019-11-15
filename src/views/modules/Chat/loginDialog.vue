@@ -59,7 +59,13 @@ export default Vue.extend({
       this.$emit('closeDialog');
     },
     login():void {
-      this.$fetch('login', { username: this.loginData.username, password: this.loginData.password })
+      this.$fetch('login', {
+        username: this.loginData.username,
+        password: this.loginData.password,
+        // os: os.family,
+        // browser: platform.name,
+        // environment: platform.description,
+      })
         .then(([error, userInfo]: [string, any]) => {
           if (!error) {
             const { groups, friends } = userInfo;
@@ -91,8 +97,8 @@ export default Vue.extend({
             this.$fetch('getLinkmansLastMessages', { linkmans: linkmanIds })
               .then(([e, resData]: [string, any]) => {
                 if (!e) {
-                  this.$store.commit('initMessagesList', resData);
-                  this.$store.commit('setUserInfo', userInfo);
+                  this.$store.commit('setLinkmans', { groups: userInfo.groups, friends: userInfo.friends, messagesMap: resData });
+                  this.$store.commit('login', userInfo);
                 }
               });
             this.closeDialog();

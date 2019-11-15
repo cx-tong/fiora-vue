@@ -1,4 +1,7 @@
 import Vue from 'vue';
+import Tip from '../views/modules/Tip.vue';
+
+const TipShow = Vue.component('Tip', Tip);
 
 interface Utils {
   getFriendId: Function,

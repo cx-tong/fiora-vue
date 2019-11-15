@@ -1,16 +1,14 @@
 <template>
   <div class="home">
-    <div class="tip"></div>
     <div class="mainPanelMask" />
     <div class="mainPanel">
       <sidebar />
       <function-bar-and-linkman-list />
       <chat />
     </div>
-  <!-- <login-and-register /> -->
-  <audio ref="tipAudio">
-    <source type="audio/mp3" :src="`./audios/${$store.state.status.sound}`" />
-  </audio>
+    <audio ref="tipAudio">
+      <source type="audio/mp3" :src="`./audios/${$store.state.status.sound}`" />
+    </audio>
   </div>
 </template>
 
@@ -30,10 +28,8 @@ export default Vue.extend({
     Sidebar,
     FunctionBarAndLinkmanList,
     Chat,
-    // LoginAndRegister,
   },
   created() {
-    Vue.prototype.tipAudio = this.$refs.tipAudio;
     this.$fetch('guest').then(([error, guestInfo]: [string, any]) => {
       if (!error) {
         this.$store.commit('setGuest', { guest: guestInfo, messages: guestInfo.messages });
@@ -42,6 +38,7 @@ export default Vue.extend({
   },
   sockets: {
     message() {
+      (this.$refs.tipAudio as any).src = `./audios/${this.$store.state.status.sound}`;
       (this.$refs.tipAudio as any).play();
     },
   },

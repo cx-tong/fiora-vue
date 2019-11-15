@@ -207,6 +207,12 @@ export default new Vuex.Store({
       (state.linkmans as any)[state.focus].messages = Object.assign({},
         (state.linkmans as any)[state.focus].messages, getMessagesMap([message]));
     },
+    changeUsername(state, name:string) {
+      state.user.username = name;
+    },
+    changeGroupName(state, { id, name }) {
+      (state.linkmans as any)[id].name = name;
+    },
   },
   actions: {
     SOCKET_message({ state }, message:any) {

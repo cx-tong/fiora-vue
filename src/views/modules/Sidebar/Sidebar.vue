@@ -1,6 +1,7 @@
 <template>
   <div class="sidebar">
-    <img class="avatar" :src="$store.state.user.avatar" v-if="$store.getters.isLogin"/>
+    <img class="avatar" :src="$store.state.user.avatar"
+    v-if="$store.getters.isLogin" @click="$refs.userInfoDialog.show()"/>
     <div class="buttons">
       <div class="iconButton" @click="$refs.settingDialog.show()" v-if="$store.getters.isLogin">
         <i class="iconfont icon-setting" style="font-size: 26px;line-height: 40px;"></i>
@@ -10,21 +11,29 @@
       </div>
     </div>
     <setting-dialog ref="settingDialog"></setting-dialog>
+    <user-info-dialog ref="userInfoDialog"></user-info-dialog>
   </div>
 </template>
 <script lang="ts">
 import Vue from 'vue';
 import SettingDialog from './settingDialog.vue';
+import UserInfoDialog from './userInfoDialog.vue';
 
 export default Vue.extend({
   components: {
     SettingDialog,
+    UserInfoDialog,
   },
   methods: {
     logout() {
       this.$socket.close();
       this.$store.commit('logout');
       this.$socket.open();
+      this.$fetch('guest').then(([error, guestInfo]: [string, any]) => {
+        if (!error) {
+          this.$store.commit('setGuest', { guest: guestInfo, messages: guestInfo.messages });
+        }
+      });
     },
   },
 });

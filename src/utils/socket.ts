@@ -1,8 +1,7 @@
 import Vue from 'vue';
 import store from '../store';
-import Tip from '../views/modules/Tip.vue';
+import Message from '../components/Message';
 
-const TipShow = Vue.component('Tip', Tip);
 const VueSocketIO = require('vue-socket.io');
 
 const socket = new VueSocketIO({
@@ -26,7 +25,6 @@ function fetch<T = any>(event: string, data = {}, {
   //     return Promise.resolve([SealText, null]);
   // }
   return new Promise((resolve) => {
-    console.log(socket);
     socket.io.emit(event, data, (res:any) => {
       if (typeof (res) === 'string') {
         // if (toast) {
@@ -36,7 +34,10 @@ function fetch<T = any>(event: string, data = {}, {
         //     isSeal = true;
         //     setTimeout(() => { isSeal = false; }, SealTimeout);
         // }
-        Object.assign(new TipShow(), { tipText: res }).$mount('.tip');
+        Message({
+          content: res,
+          type: 'error',
+        });
         resolve([res, null]);
       } else {
         resolve([null, res]);
