@@ -66,13 +66,13 @@ export default Vue.extend({
         // browser: platform.name,
         // environment: platform.description,
       })
-        .then(([error, userInfo]: [string, any]) => {
+        .then(([error, userInfo]: [string, User]) => {
           if (!error) {
             const { groups, friends } = userInfo;
             const linkmanIds = [
-              ...groups.map((group:Group) => group._id),
-              ...friends.map((friend:Friend) => this.$utils
-                .getFriendId((friend as any).to._id, userInfo._id)),
+              ...(groups as Group[]).map((group:Group) => group._id),
+              ...(friends as Friend[]).map((friend:Friend) => this.$utils
+                .getFriendId((friend.to as User)._id, userInfo._id)),
             ];
             this.$fetch('getLinkmansLastMessages', { linkmans: linkmanIds })
               .then(([e, resData]: [string, MessagesMap]) => {
@@ -87,17 +87,17 @@ export default Vue.extend({
     },
     register():void {
       this.$fetch('register', { username: this.registerData.username, password: this.registerData.password })
-        .then(([error, userInfo]: [string, any]) => {
+        .then(([error, userInfo]: [string, { groups: Group[], friends: Friend[] }]) => {
           if (!error) {
             const linkmanIds = [
-              ...userInfo.groups.map((group:Group) => group._id),
-              ...userInfo.friends.map((friend:any) => this.$utils
-                .getFriendId(friend.from, friend.to._id)),
+              ...userInfo.groups.map((group: Group) => group._id),
+              ...userInfo.friends.map((friend: Friend) => this.$utils
+                .getFriendId(friend.from, (friend.to as User)._id)),
             ];
             this.$fetch('getLinkmansLastMessages', { linkmans: linkmanIds })
-              .then(([e, resData]: [string, any]) => {
+              .then(([e, messageList]: [string, Message[]]) => {
                 if (!e) {
-                  this.$store.commit('setLinkmans', { groups: userInfo.groups, friends: userInfo.friends, messagesMap: resData });
+                  this.$store.commit('setLinkmans', { groups: userInfo.groups, friends: userInfo.friends, messagesMap: messageList });
                   this.$store.commit('login', userInfo);
                 }
               });

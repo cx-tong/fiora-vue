@@ -53,6 +53,7 @@ export default Vue.extend({
               .then(([e, messages]:[string, Message[]]) => {
                 if (!e) {
                   this.$store.commit('addFriend', { friend: friendInfo, message: messages });
+                  this.$store.commit('setFocusLinkman', friendId);
                 }
               });
             this.showState = false;
@@ -63,7 +64,6 @@ export default Vue.extend({
       this.$fetch('deleteFriend', { userId: this.userInfo._id.replace(this.$store.state.user._id, '') })
         .then(([error, friendInfo]: [string, User]) => {
           if (!error) {
-            console.log(this.userInfo);
             this.$store.commit('deleteLinkman', this.userInfo._id);
             this.showState = false;
           }

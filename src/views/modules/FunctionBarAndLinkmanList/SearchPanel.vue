@@ -68,7 +68,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import UserResult from './searchResult/usersResultDialog.vue';
-import GroupResult from './searchResult/groupsResult.vue';
+import GroupResult from './searchResult/groupsResultDialog.vue';
 
 export default Vue.extend({
   components: {
@@ -84,8 +84,8 @@ export default Vue.extend({
       userInfo: {},
       groupInfo: {},
       searchResult: {
-        users: [],
-        groups: [],
+        users: [] as User[],
+        groups: [] as Group[],
       },
     };
   },
@@ -95,7 +95,7 @@ export default Vue.extend({
     },
     search() {
       this.$fetch('search', { keywords: this.searchKey })
-        .then(([error, res]: [string, any]) => {
+        .then(([error, res]: [string, { users: User[], groups: Group[] }]) => {
           if (!error) {
             this.searchResult = res;
           }

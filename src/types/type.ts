@@ -10,6 +10,7 @@ interface Message {
       originUsername: string;
       tag: string;
   };
+  to:string
   loading: boolean;
   percent: number;
   createTime: string;
@@ -45,7 +46,9 @@ interface Friend {
   _id: string;
   name: string;
   avatar: string;
-  createTime: string;
+  createTime: string | number;
+  from ?: string | User;
+  to ?: string | User;
 }
 
 /** 联系人 */
@@ -64,6 +67,8 @@ interface User {
   _id: string;
   username: string;
   avatar: string;
+  groups?: Group[],
+  friends?: Friend[],
 }
 
 /** redux store state */

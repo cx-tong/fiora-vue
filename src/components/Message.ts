@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import Vue, { VueConstructor } from 'vue';
 import Message from './Message.vue';
 
 const MessageBox = Vue.extend(Message);

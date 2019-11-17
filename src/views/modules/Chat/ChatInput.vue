@@ -6,11 +6,11 @@
     <div class="inputPanel" v-else>
       <div class="iconButton">
         <i class="iconfont icon-expression" style="font-size: 32px;
-        line-height: 44px;" @click="sendMessage"></i>
+        line-height: 44px;"></i>
       </div>
       <div class="iconButton">
         <i class="iconfont icon-feature" style="font-size: 32px;
-        line-height: 44px;" @click="sendMessage"></i>
+        line-height: 44px;"></i>
       </div>
       <div class="from">
         <input class="input"
@@ -48,13 +48,15 @@ export default Vue.extend({
       this.showLoginDialog = false;
     },
     sendMessage() {
-      this.$fetch('sendMessage', { to: this.$store.state.focus, type: 'text', content: this.content })
-        .then(([error, message]:[string, Message]) => {
-          if (!error) {
-            this.$store.commit('pushMessagesList', message);
-            this.content = '';
-          }
-        });
+      if (this.content) {
+        this.$fetch('sendMessage', { to: this.$store.state.focus, type: 'text', content: this.content })
+          .then(([error, message]:[string, Message]) => {
+            if (!error) {
+              this.$store.commit('pushMessagesList', message);
+              this.content = '';
+            }
+          });
+      }
     },
   },
 });

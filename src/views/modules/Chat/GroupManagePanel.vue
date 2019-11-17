@@ -4,12 +4,15 @@
       <label>群组功能</label>
     </div>
     <div class="body">
-      <label>修改群名称</label>
-      <input class="input" v-model="groupName" placeholder="请输入群名称" />
-      <button class="button" @click="changeGroupName">确认</button>
-      <button class="button"
-        @click="linkman.creator===$store.state.user._id?deleteGroup():leaveGroup()">
-        {{linkman.creator === $store.state.user._id ? '解散群组' : '退出群组'}}</button>
+      <div class="changeGroupName" v-if="linkman.creator===$store.state.user._id">
+        <p>修改群名称:</p>
+        <input class="input" v-model="groupName" placeholder="请输入群名称" />
+        <button class="button" @click="changeGroupName">确认</button>
+        <div style="margin:5px;">
+          <button class="button" @click="deleteGroup">解散群组</button>
+        </div>
+      </div>
+      <button class="button" style="margin:5px;" @click="leaveGroup" v-else>退出群组</button>
       <div class="onlineMember">
         <div class="userList">
           在线成员: {{onlineMember.length}}
@@ -103,10 +106,16 @@ export default Vue.extend({
     }
     .body {
       overflow-y:auto;
-      .input {
-        height: 36px;
-        line-height: 36px;
-        border-radius: 10px;
+      .changeGroupName {
+        padding: 5px;
+        .input {
+          height: 36px;
+          margin-right: 5px;
+          line-height: 36px;
+          width: 210px;
+          border-radius: 6px;
+          border: 1px solid rgba(0, 0, 0, 0.2);
+        }
       }
       .button {
         border: 0;

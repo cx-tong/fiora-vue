@@ -12,7 +12,7 @@
       <div class="rowContainer nameTimeBlock">
         <p class="nameit">{{linkman.name}}</p>
         <p class="time" v-if="preview._id!==undefined">
-          {{covertTime(preview.createTime)}}</p>
+          {{$utils.covertTime(preview.createTime)}}</p>
       </div>
       <div class="rowContainer previewUnreadBlock"
       v-if="preview._id===undefined">
@@ -51,19 +51,8 @@ export default Vue.extend({
     },
   },
   methods: {
-    covertTime(param:Date) {
-      const time = new Date(param);
-      return `${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}`;
-    },
     switchLinkman() {
       this.$store.commit('setFocusLinkman', this.linkman._id);
-    },
-  },
-  sockets: {
-    message(res:Message) {
-      // if (res.to === this.linkman._id && this.$store.state.linkmanFocusId !== res.to) {
-      //   this.unread = this.unread + 1;
-      // }
     },
   },
 });

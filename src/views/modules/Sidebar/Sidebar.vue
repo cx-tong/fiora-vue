@@ -29,7 +29,7 @@ export default Vue.extend({
       this.$socket.close();
       this.$store.commit('logout');
       this.$socket.open();
-      this.$fetch('guest').then(([error, guestInfo]: [string, any]) => {
+      this.$fetch('guest').then(([error, guestInfo]: [string, Linkman]) => {
         if (!error) {
           this.$store.commit('setGuest', { guest: guestInfo, messages: guestInfo.messages });
         }

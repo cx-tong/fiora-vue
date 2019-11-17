@@ -41,9 +41,7 @@ export default Vue.extend({
               .then(([e, messages]: [string, Message]) => {
                 if (!e) {
                   this.$store.commit('addGroup', { group: groupInfo, messageMap: messages });
-                  // this.$store.commit('addGroupInfo', groupInfo);
-                  // this.$store.commit('addMessagesList',
-                  // { id: groupInfo._id, message: messages });
+                  this.$store.commit('setFocusLinkman', groupInfo._id);
                   this.showState = false;
                 }
               });

@@ -53,13 +53,12 @@ function transformGroup(group: Linkman): Linkman {
 * 转换好友数据结构
 * @param friend 好友
 */
-function transformFriend(friend: Linkman): Linkman {
-  // @ts-ignore
+function transformFriend(friend: Friend): Linkman {
   const { from, to } = friend;
   const transformedFriend = {
-    _id: getFriendId(from, to._id ? to._id : to),
-    name: to.username,
-    avatar: to.avatar,
+    _id: getFriendId(from as string, (to as User)._id ? (to as User)._id : to as string),
+    name: (to as User).username,
+    avatar: (to as User).avatar,
     // @ts-ignore
     createTime: friend.createTime,
     type: 'friend',
@@ -78,48 +77,16 @@ export default new Vuex.Store({
       username: '',
       avatar: '',
       tag: '',
+      token: '',
       isAdmin: false,
     },
     linkmans: {},
     /** 聚焦的联系人 */
     focus: '',
-    /** 客户端连接状态 */
-    connect: false,
     /** 客户端的一些状态值 */
     status: {
-      /** 是否显示登陆注册框 */
-      loginRegisterDialogVisible: false,
-      /** 主题 */
-      theme: '',
-      /** 主题主色调 */
-      primaryColor: '',
-      /** 主题文字主色调 */
-      primaryTextColor: '',
-      /** 背景图 */
-      backgroundImage: '',
-      /** 启用毛玻璃效果 */
-      aero: false,
-      /** 新消息声音提示开关 */
-      soundSwitch: false,
       /** 声音类型 */
       sound: 'default.mp3',
-      /** 新消息桌面提醒开关 */
-      notificationSwitch: false,
-      /** 新消息语言朗读开关 */
-      voiceSwitch: false,
-      /** 是否朗读个人发送的消息开关 */
-      selfVoiceSwitch: false,
-      /**
-       * 用户标签颜色模式
-       * singleColor: 固定颜色
-       * fixedColor: 同一词始终同一颜色
-       * randomColor: 同一词在每次渲染中保持同一颜色
-       */
-      tagColorMode: '',
-      /** 是否展示侧边栏 */
-      sidebarVisible: false,
-      /** 是否展示搜索+联系人列表栏 */
-      functionBarAndLinkmanListVisible: false,
     },
   },
   getters: {
@@ -134,6 +101,9 @@ export default new Vuex.Store({
     },
     login(state, user:State['user']) {
       Object.assign(state.user, user);
+      if (state.user.token) {
+        window.localStorage.setItem('token', state.user.token);
+      }
     },
     logout(state) {
       (state.user as Object) = {
@@ -149,7 +119,7 @@ export default new Vuex.Store({
     // 设置当前选中联系人id
     setFocusLinkman(state, id:string) {
       state.focus = id;
-      (state.linkmans as any)[id].unread = 0;
+      (state.linkmans as LinkmansMap)[id].unread = 0;
     },
     // guest登录
     setGuest(state, { guest, messages }) {
@@ -158,7 +128,6 @@ export default new Vuex.Store({
       state.focus = guest._id;
     },
     createGroup(state, group:Linkman) {
-      console.log(group);
       state.linkmans = Object.assign({}, state.linkmans, getLinkmansMap([transformGroup(group)]));
       state.focus = group._id;
     },
@@ -177,12 +146,11 @@ export default new Vuex.Store({
           avatar: friend.avatar,
         },
         createTime: Date.now(),
-      } as any);
+      } as Friend);
       state.linkmans = Object.assign({},
         state.linkmans, getLinkmansMap([newLinkman]));
       (state.linkmans as LinkmansMap)[newLinkman._id]
         .messages = getMessagesMap(message[newLinkman._id]);
-      state.focus = newLinkman._id;
     },
     deleteLinkman(state, linkmanId:string) {
       Vue.delete(state.linkmans, linkmanId);
@@ -204,21 +172,28 @@ export default new Vuex.Store({
       [state.focus] = Object.keys(state.linkmans);
     },
     pushMessagesList(state, message: Message) {
-      (state.linkmans as any)[state.focus].messages = Object.assign({},
-        (state.linkmans as any)[state.focus].messages, getMessagesMap([message]));
+      (state.linkmans as LinkmansMap)[state.focus].messages = Object.assign({},
+        (state.linkmans as LinkmansMap)[state.focus].messages, getMessagesMap([message]));
     },
     changeUsername(state, name:string) {
       state.user.username = name;
     },
     changeGroupName(state, { id, name }) {
-      (state.linkmans as any)[id].name = name;
+      (state.linkmans as LinkmansMap)[id].name = name;
     },
   },
   actions: {
-    SOCKET_message({ state }, message:any) {
-      Vue.set((state.linkmans as any)[message.to].messages, message._id, message);
+    SOCKET_message(store, message: Message) {
+      const { state } = store;
+      if (!(state.linkmans as LinkmansMap)[message.to]) {
+        const messagesMap: { [messageId: string]: Message[] } = {};
+        messagesMap[message.to] = [message];
+        store.commit('addFriend', { friend: message.from, message: messagesMap });
+      }
+      Vue.set((state.linkmans as LinkmansMap)[message.to].messages, message._id, message);
       if (message.to !== state.focus) {
-        (state.linkmans as any)[message.to].unread = (state.linkmans as any)[message.to].unread + 1;
+        (state.linkmans as LinkmansMap)[message.to]
+          .unread = (state.linkmans as LinkmansMap)[message.to].unread + 1;
       }
     },
   },

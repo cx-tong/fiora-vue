@@ -24,7 +24,6 @@ export default Vue.extend({
       if (this.linkman.type === 'group') {
         this.$emit('showSidePanel');
       } else {
-        console.log(this.linkman);
         (this.$refs.userResultDialog as any).show();
       }
     },

@@ -33,7 +33,7 @@
   </div>
 </template>
 <script lang="ts">
-import Vue, { CreateElement } from 'vue';
+import Vue, { CreateElement, Component } from 'vue';
 import SearchPanel from './SearchPanel.vue';
 import CreateGroupDialog from './CreateGroupDialog.vue';
 

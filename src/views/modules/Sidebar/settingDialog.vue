@@ -45,7 +45,6 @@ export default Vue.extend({
       this.showState = true;
     },
     setAudio(src:string) {
-      console.log(this);
       this.$store.commit('setTipAudio', src);
       this.audio.src = `./audios/${src}`;
       this.audio.play();

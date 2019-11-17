@@ -6,7 +6,6 @@ const VueSocketIO = require('vue-socket.io');
 
 const socket = new VueSocketIO({
   debug: true,
-  // connection: 'https://fiora.suisuijiang.com/',
   connection: 'http://localhost:9200/',
   vuex: {
     store,

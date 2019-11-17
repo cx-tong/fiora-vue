@@ -7,18 +7,21 @@
       <img
         class="avatar"
         :src="value.from.avatar"
-        alt
         style="width: 44px; height: 44px; border-radius: 22px;"
       />
       <div class="right">
         <div class="nicknameTimeBlock">
-          <span class="tag" style="background-color: rgb(14, 160, 21);">BOT</span>
+          <span class="tag" style="background-color: rgb(14, 160, 21);"
+          v-if="value.from.tag">{{value.from.tag}}</span>
           <span class="nickname">{{value.from.username}}</span>
-          <span class="time">{{covertTime(value.createTime)}}</span>
+          <span class="time">{{$utils.covertTime(value.createTime)}}</span>
         </div>
         <div class="contentButtonBlock">
-          <div class="content">
+          <div class="content" v-if="value.type==='text'">
             <div class="textMessage">{{value.content}}</div>
+          </div>
+          <div class="content" v-else-if="value.type==='image'">
+            <img :src="value.content" />
           </div>
         </div>
         <div class="arrow"></div>
@@ -36,15 +39,9 @@ export default Vue.extend({
   watch: {
     messagesList() {
       this.$nextTick(() => {
-        const scroll:any = this.$refs.messageList;
+        const scroll: any = this.$refs.messageList;
         scroll.scrollTop = scroll.scrollHeight;
       });
-    },
-  },
-  methods: {
-    covertTime(param:Date) {
-      const time = new Date(param);
-      return `${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}`;
     },
   },
 });

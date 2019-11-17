@@ -19,9 +19,6 @@ import Sidebar from './modules/Sidebar/Sidebar.vue';
 import FunctionBarAndLinkmanList from './modules/FunctionBarAndLinkmanList/FunctionBarAndLinkmanList.vue';
 import Chat from './modules/Chat/Chat.vue';
 
-  interface MessageList {
-    messages: [],
-  }
 export default Vue.extend({
   name: 'home',
   components: {
@@ -30,16 +27,41 @@ export default Vue.extend({
     Chat,
   },
   created() {
-    this.$fetch('guest').then(([error, guestInfo]: [string, any]) => {
-      if (!error) {
-        this.$store.commit('setGuest', { guest: guestInfo, messages: guestInfo.messages });
-      }
-    });
+    if (window.localStorage.getItem('token')) {
+      this.$fetch('loginByToken', { token: window.localStorage.getItem('token') })
+        .then(([error, userInfo]: [string, User]) => {
+          if (!error) {
+            const { groups, friends } = userInfo;
+            const linkmanIds = [
+              ...(groups as Group[]).map((group:Group) => group._id),
+              ...(friends as Friend[]).map((friend:Friend) => this.$utils
+                .getFriendId((friend.to as User)._id, userInfo._id)),
+            ];
+            this.$fetch('getLinkmansLastMessages', { linkmans: linkmanIds })
+              .then(([e, resData]: [string, MessagesMap]) => {
+                if (!e) {
+                  this.$store.commit('setLinkmans', { groups: userInfo.groups, friends: userInfo.friends, messagesMap: resData });
+                  this.$store.commit('login', userInfo);
+                }
+              });
+          }
+        });
+    } else {
+      this.$fetch('guest').then(([error, guestInfo]: [string, Linkman]) => {
+        if (!error) {
+          this.$store.commit('setGuest', { guest: guestInfo, messages: guestInfo.messages });
+        }
+      });
+    }
   },
   sockets: {
-    message() {
-      (this.$refs.tipAudio as any).src = `./audios/${this.$store.state.status.sound}`;
-      (this.$refs.tipAudio as any).play();
+    message(message: Message) {
+      (this.$refs.tipAudio as HTMLAudioElement).src = `./audios/${this.$store.state.status.sound}`;
+      (this.$refs.tipAudio as HTMLAudioElement).play();
+      if (!(this.$store.state.linkmans as LinkmansMap)[message.to]) {
+        this.$fetch('addFriend', { userId: message.from._id })
+          .then(([error, friendInfo]: [string, User]) => {});
+      }
     },
   },
 });

@@ -1,10 +1,8 @@
 import Vue from 'vue';
-import Tip from '../views/modules/Tip.vue';
-
-const TipShow = Vue.component('Tip', Tip);
 
 interface Utils {
   getFriendId: Function,
+  covertTime: Function,
 }
 
 const utils = {
@@ -18,6 +16,13 @@ const utils = {
       return userId1 + userId2;
     }
     return userId2 + userId1;
+  },
+  covertTime: (param:Date) => {
+    const time = new Date(param);
+    const hour = time.getHours();
+    const minute = time.getMinutes() < 10 ? `0${time.getMinutes()}` : time.getMinutes();
+    const second = time.getSeconds() < 10 ? `0${time.getSeconds()}` : time.getSeconds();
+    return `${hour}:${minute}:${second}`;
   },
 } as Utils;
 

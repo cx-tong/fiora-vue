@@ -1,29 +1,10 @@
 # fiora-vue
 
-## Project setup
+[fiora](https://github.com/yinxin630/fiora)这个项目的vue前端实现
+
+
+### 运行(需先运行[fiora](https://github.com/yinxin630/fiora)项目内的后端服务)
 ```
 npm install
-```
-
-### Compiles and hot-reloads for development
-```
 npm run serve
 ```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
